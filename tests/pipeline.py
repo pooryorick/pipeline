@@ -22,36 +22,62 @@ class Harness1(unittest.TestCase):
 		pass
 
 
+def run(*args):
+	p1 = pipeline.pipeline(*args)
+	outchan = p1.open()
+	data = outchan.read()
+	p1.close()
+	return data
+
+
 class TestPipeline(Harness1):
 
 
 	def test_basic(self):
 		cmd1 = (sys.executable, '-c' ,'print("hello")')
-		p1 = pipeline.pipeline(cmd1)
-		outchan = p1.open()
-		data = outchan.read()
-		p1.close()
+		data = run(cmd1)
 		self.assertEqual("hello\n", data)
 
 
-	def test_humbug:
-		cmd1 = ('echo', 'echo', 'hello')
-		cmd2 = ('sed', 'sed', 's/hello/humbug/')
-		p1 = pipeline.pipeline(cmd1 ,cmd2)
-		outchan = p1.open()
-		data = outchan.read()
-		p1.close()
-		self.assertEqual(data, 'humbug')
+	def test_humbug(self):
+		cmd1 = ('echo', 'hello')
+		cmd2 = ('sed', 's/hello/humbug/')
+		data = run(cmd1 ,cmd2)
+		self.assertEqual(data, 'humbug\n')
+
+
+	def test_greenbeans(self):
+		cmd1 = ('echo', 'green beans')
+		cmd2 = ('awk' , '/beans/{ print $1 }')
+		cmd3 = ('rev' ,)
+		cmd4 = ('bash', '-c', 'read; echo $REPLY $REPLY')
+		data = run(cmd1, cmd2, cmd3, cmd4)
+		self.assertEqual(data ,'neerg neerg\n')
+
+
+	def test_test1(self):
+		p1 = pipeline.pipeline(
+			('yes', 'easy as py'),
+			('cat'),
+			('tr', 'a', 'A'),
+			('tr', 'g', 'G'),
+			('awk', '{ print $0 }'),
+			('sed', 's/pipe/PIPE/g'),
+			('sed', 's/import/IMPORT/g'),
+		)
+		chan = p1.open()
+		data1 = chan.read(3)
+		data2 = chan.read(3)
+		p1.terminate()
+		self.assertEqual(data1, 'eAs')
+		self.assertEqual(data2, 'y A')
 
 
 	def test_pie(self):
 		cmds = []
 		cmds.append(('echo', 'easy as pie'))
 		cmds.append(('awk', '{ print $1, $2, "rhubarb", $3 }'))
-		p1 = pipeline.pipeline(*cmds)
-		outchan = p1.open()
-		data = outchan.read()
-		p1.close()
+		data = run(*cmds)
 		self.assertEqual(data ,"easy as rhubarb pie\n")
 
 
@@ -59,10 +85,7 @@ class TestPipeline(Harness1):
 		cmd1 = ('echo', 'batman')
 		cmd2 = ('tr', 'a', 'o')
 		cmd3 = ('rev')
-		p1 = pipeline.pipeline(cmd1, cmd2, cmd3)
-		outchan = p1.open()
-		data = outchan.read()
-		p1.close()
+		data = run(cmd1, cmd2, cmd3)
 		self.assertEqual("nomtob\n" , data)
 
 

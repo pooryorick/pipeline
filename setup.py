@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pipeline",
-    version="0.0.3",
+    version="0.1.0",
     author="Poor Yorick",
     author_email="org.pypi@pooryorick.com",
     description="Command pipelines for Python.",
@@ -15,7 +15,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
-	"OSI Approved :: GNU General Public License v3 (GPLv3)",
+	"License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
